@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import TransactionsList from './TransactionsList'
 import Search from './Search'
+import Sort from './Sort';
 // import {transactions} from '../transactionsData'
 
 class AccountContainer extends Component {
@@ -10,7 +11,8 @@ class AccountContainer extends Component {
 
       this.state = { 
         transactions: [],
-        searchTerm: "" 
+        searchTerm: "" ,
+        sortChoice: ""
     }
   }
     // get a default state working with the data imported from TransactionsData
@@ -37,12 +39,24 @@ class AccountContainer extends Component {
     })
   }
 
+  changeSortChoice = (event) => {
+    this.setState({ sortChoice: event.target.value})
+  }
+
+  sortTransactionsBySortChoice = () => {
+    return this.filterTransactionsBySearchTerm().sort((trA, trB) => {
+      if (this.state.sortChoice === "Alphabetically") {return trA.category.toLowerCase().localeCompare(trB.category.toLowerCase())}
+      if (this.state.sortChoice === "Amount") {return trA.amount - trB.amount }
+    })
+  }
+
   render() {
 
     return (
       <div>
         <Search searchTerm={this.state.searchTerm} handleChange={this.handleChange}/>
-        <TransactionsList transactions={this.filterTransactionsBySearchTerm()}/>
+        <Sort sortChoice={this.state.sortChoice} handleChange={this.changeSortChoice}/>
+        <TransactionsList transactions={this.sortTransactionsBySortChoice()}/>
       </div>
     )
   }
